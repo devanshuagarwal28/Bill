@@ -5,11 +5,11 @@ Predicted. maybe, hopefully, possibbly.
 ```
 /
 |- server/
-|- REST/
- |- node/
-  |- server.js
- |- server.sh
- |- server.bat
+ |- REST/
+  |- node/
+   |- server.js
+  |- server.sh
+  |- server.bat
 |- client/
  |- web/
   |- server/
