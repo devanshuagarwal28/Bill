@@ -4,26 +4,71 @@
 Predicted. maybe, hopefully, possibbly.
 ```
 /
-|- server/
- |- REST/
-  |- node/
-   |- server.js
-  |- server.sh
-  |- server.bat
 |- client/
+ |- configure.sh
+ |- configure.bat
  |- web/
   |- server/
    |- file/
     |- node/
-     |- fileServer.js
-    |- fServer.sh
-    |- fServer.bat
+     |- server.js
+     |- config.json      # [1]
+    |- +config.json      #+ for static files location and url mapping config file
+   |- server.sh
+   |- server.bat
+   |- +config.txt        #+ what server to start
   |- static/
-   |- css/ # Css Files
-   |- js/ # Js Files
-   |- # Html Files 
+   |- css/               # Css Files
+   |- js/                # Js Files
+   |- *.html             # Html Files
+  |- config.json         # URL mapping config file
+
+|- configure.sh          # Generate config.[json|txt] files
+|- configure.bat         # Generate config.[json|txt] files
+
+|- data/                 # Dir with DB, Session and Temp files
+ |- database/            # Database
+  |- db/
+   |- xlsx
+    |- db.xlsx
+  |- connectors/         # Connector
+   |- py/
+    |- db.py
+    |- config.json       # [1]
+   |- +config.json       #+ all databases directory path
+ |- sessions/
+  |- @Session ID
+   |- session.json       # File containing session info
+   |- files/             # Session Files
+    |- *.[xlsx|xlsm|xls] # Excel file for the session
+ |- temp/                # Temp dir
+
 |- docs/
  |- apiOverview.md       # Overview File
  |- desc.md              # Project Description
  |- projectStructure.md  # this file
+
+|- server/
+ |- REST/
+  |- node/
+   |- server.js
+   |- config.json        # [1]
+  |- +config.json        #+ directory for src/
+ |- server.sh
+ |- server.bat
+ |- +config.txt          #+ what server to start
+
+|- src/                  # Actual Source Files
+ |- python/
+  |- *.py                # Python Files
+ |- bill.sh
+ |- bill.bat
+ |- bill.py              # Main Python entry point
+ |- bill.js              # Wrapper to start bill.py child process
+ |- +config.txt          #+ [2]
+
+----
++* : auto gen file
+[1]: # for respective config file location that will be auto generated via ./configure
+[2]: # directory info for data, database, connector, sessions and temp
 ```
