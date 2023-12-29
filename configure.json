@@ -1,0 +1,27 @@
+{
+  "client": {
+    "dir": "$PROJ_DIR/client",
+    "type": "web",
+    "types": {
+      "web": {
+        "server": "file",
+        "host":{
+          "address": "0.0.0.0",
+          "port": 8585
+        },
+        "servers": {
+          "file": {
+            "staticFiles": "$CLIENT_DIR/web/server/file/static/",
+            "provider": "node",
+            "providers": {
+              "node": {
+                
+              }
+            }
+          },
+          "react": {}
+        }
+      }
+    }
+  }
+}

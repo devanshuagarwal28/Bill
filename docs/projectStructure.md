@@ -5,8 +5,9 @@ Predicted. maybe, hopefully, possibbly.
 ```
 /
 |- client/
- |- configure.sh
- |- configure.bat
+ |- client.sh
+ |- client.bat
+ |- +config.txt         # what client to start
  |- web/
   |- server/
    |- file/
@@ -16,15 +17,17 @@ Predicted. maybe, hopefully, possibbly.
     |- +config.json      #+ for static files location and url mapping config file
    |- server.sh
    |- server.bat
-   |- +config.txt        #+ what server to start
+   |- +config.txt        #+ what server to start and configs
   |- static/
    |- css/               # Css Files
    |- js/                # Js Files
    |- *.html             # Html Files
-  |- config.json         # URL mapping config file
+  |- URLMapping.txt      # URL mapping config file
 
 |- configure.sh          # Generate config.[json|txt] files
 |- configure.bat         # Generate config.[json|txt] files
+|- configure.json
+|- configure.js
 
 |- data/                 # Dir with DB, Session and Temp files
  |- database/            # Database

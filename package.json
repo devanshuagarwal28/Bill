@@ -1,0 +1,8 @@
+{
+  "name": "bill",
+  "type": "module",
+  "exports": {
+    "./utils": "./.node_modules/utils"
+  },
+  "workspaces": [".customPkgs/*"]
+}
