@@ -9,7 +9,7 @@ export CONFIG_PREFIX="ag_"
 PATH=$PATH:~+/.bin/
 
 # Start Client
-runSomethingInBill ./client client.sh
+runSomethingInBill ~+/client client.sh
 
 if [ 0 -ne $? ]; then
   exit 1

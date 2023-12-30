@@ -15,6 +15,8 @@ const filename = basename(__filename)
 
 
 const configFilePrefix = process.env["CONFIG_PREFIX"] || "ag_"
+const PLATFORM = process.platform
+const SCRIPT_EXT = PLATFORM == "linux" ? "sh" : "bat"
 const myRegex = RegExp(/\$.*?\$/g)
 let gv = {
   "PROJ_DIR": process.cwd()
@@ -125,11 +127,11 @@ class Client extends Config
       gv["CLIENT_DIR"], "config.txt",
       this.makeClientConfig, clinetConfig
     )
-    this.addConfig(
-      "webServer",
-      `${gv["CLIENT_DIR"]}/web/server/`, "config.txt",
-      this.makeWebServerConfig
-    )
+    // this.addConfig(
+    //   "webServer",
+    //   `${gv["CLIENT_DIR"]}/web/server/`, "config.txt",
+    //   this.makeWebServerConfig
+    // )
     this.addConfig(
       "webFileServer",
       `${gv["CLIENT_DIR"]}/web/server/file`, "config.json",
@@ -142,27 +144,31 @@ class Client extends Config
   {
     let {type} = config
     let mType = config['types'][type]
+    let finalConfig = ``
     switch(type)
     {
       case 'web':
-        save(`${type}/server/`)
-        return [
-          [ "webServer", mType ]
-        ]
-    }
-  }
+        finalConfig += 
+        `${type}/server/${mType['server']} server.${SCRIPT_EXT}`
+        switch(mType['server'])
+        {
+          case 'file':
+            let serverType = mType['servers'][mType['server']]
+            let provider = serverType['provider']
+            
+            finalConfig += ` ${provider}`
+            finalConfig += `\nbrowser\n`
+            finalConfig += `${mType["url"]}`
+            save(finalConfig)
+            return [
+              [
+                "webFileServer",
+                mType['servers'][mType['server']]
+              ]
+            ]
+        }
+        break
 
-  makeWebServerConfig(config, save)
-  {
-    let {server} = config
-    let mType = config['servers'][server]
-    switch(server)
-    {
-      case 'file':
-        save(`node file/${mType['provider']}/server.js ${config['host']['address']} ${config['host']['port']}`)
-        return [
-          ['webFileServer', mType]
-        ]
     }
   }
 

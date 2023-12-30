@@ -12,12 +12,10 @@ Predicted. maybe, hopefully, possibbly.
   |- server/
    |- file/
     |- node/
-     |- server.js
-     |- config.json      # [1]
+     |- server.js        # need to pass ../config.json as argument
     |- +config.json      #+ for static files location and url mapping config file
-   |- server.sh
-   |- server.bat
-   |- +config.txt        #+ what server to start and configs
+    |- server.sh
+    |- server.bat
   |- static/
    |- css/               # Css Files
    |- js/                # Js Files

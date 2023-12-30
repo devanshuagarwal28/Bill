@@ -10,6 +10,7 @@
           "address": "0.0.0.0",
           "port": 8585
         },
+        "url": "http://127.0.0.1:8585",
         "servers": {
           "file": {
             "staticFiles": "$CLIENT_DIR$/web/server/file/static/",
