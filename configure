@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export CONFIG_PREFIX="ag_"
+node --trace-uncaught configure.js $@

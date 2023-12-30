@@ -1,0 +1,16 @@
+#!/bin/bash
+
+export CONFIG_PREFIX="ag_"
+
+# if ! runSomethingInBill &> /dev/null; then
+#   echo "Adding custom bin in path"
+#   # include custon bin in path
+# fi
+PATH=$PATH:~+/.bin/
+
+# Start Client
+runSomethingInBill ./client client.sh
+
+if [ 0 -ne $? ]; then
+  exit 1
+fi

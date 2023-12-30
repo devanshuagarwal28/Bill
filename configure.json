@@ -1,6 +1,7 @@
 {
   "client": {
-    "dir": "$PROJ_DIR/client",
+    
+    "$CLIENT_DIR": "$PROJ_DIR$/client",
     "type": "web",
     "types": {
       "web": {
@@ -11,8 +12,11 @@
         },
         "servers": {
           "file": {
-            "staticFiles": "$CLIENT_DIR/web/server/file/static/",
+            "staticFiles": "$CLIENT_DIR$/web/server/file/static/",
             "provider": "node",
+            "urlMapping": {
+              "home": "index.html"
+            },
             "providers": {
               "node": {
                 

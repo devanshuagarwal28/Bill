@@ -21,4 +21,31 @@ function readConfig(configFile, type = "json")
   }
 }
 
-export { readConfig };
+function saveConfig(configFile, data)
+{
+  try
+  {
+    fs.writeFileSync(configFile, data)
+    return true
+  }
+  catch(err)
+  {
+    console.log(err)
+    return false
+  }
+  
+}
+
+function removeConfig(configFile)
+{
+  try {
+    fs.rmSync(configFile)
+  }
+  catch(err)
+  {
+
+  }
+  
+}
+
+export { readConfig, saveConfig, removeConfig };

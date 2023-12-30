@@ -1,0 +1,9 @@
+#!/bin/bash
+
+rVal=0
+c_d=$PWD
+cd $1
+bash $2
+rVal=$?
+cd $c_d
+exit $rVal
