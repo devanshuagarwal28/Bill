@@ -6,10 +6,14 @@ export CONFIG_PREFIX="ag_"
 #   echo "Adding custom bin in path"
 #   # include custon bin in path
 # fi
+
+h=($@)
+# echo ${h[@]}
+
 PATH=$PATH:~+/.bin/
 
 # Start Client
-runSomethingInBill ~+/client client.sh
+runSomethingInBill ~+/client client.sh ${h[@]}
 
 if [ 0 -ne $? ]; then
   exit 1

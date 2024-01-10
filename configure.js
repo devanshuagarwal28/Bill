@@ -99,6 +99,7 @@ class Config {
   {
     switch(action)
     {
+      case "clear":
       case "clean":
         console.log("cleaning")
         this.clearConfig()
@@ -127,11 +128,7 @@ class Client extends Config
       gv["CLIENT_DIR"], "config.txt",
       this.makeClientConfig, clinetConfig
     )
-    // this.addConfig(
-    //   "webServer",
-    //   `${gv["CLIENT_DIR"]}/web/server/`, "config.txt",
-    //   this.makeWebServerConfig
-    // )
+
     this.addConfig(
       "webFileServer",
       `${gv["CLIENT_DIR"]}/web/server/file`, "config.json",
