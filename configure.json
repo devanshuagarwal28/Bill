@@ -7,6 +7,7 @@
     "$DB": "xlsx",
     "$DB_DIR": "$DATA_DIR$/database/db/$DB$",
     "$DB_CON_DIR": "$DB_DIR$/connectors",
+    "$DB_NAME": "db",
     "connectors": {
       "py": {
         "$PYDB_CON_DIR": "$DB_CON_DIR$/py"
