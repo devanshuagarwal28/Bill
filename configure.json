@@ -1,14 +1,29 @@
 {
+  "root": {
+    "$SRC_DIR": "$PROJ_DIR/src"
+  },
+  "data": {
+    "$DATA_DIR": "$PROJ_DIR$/data",
+    "$DB": "xlsx",
+    "$DB_DIR": "$DATA_DIR$/database/db/$DB$",
+    "$DB_CON_DIR": "$DB_DIR$/connectors",
+    "connectors": {
+      "py": {
+        "$PYDB_CON_DIR": "$DB_CON_DIR$/py"
+      }
+    }
+  },
   "server": {
     "$SERVER_DIR": "$PROJ_DIR$/server",
     "type": "node",
     "st": "REST",
+    "host": {
+      "address": "0.0.0.0",
+      "port": 8686
+    },
     "types": {
       "node": {
-        "host": {
-          "address": "0.0.0.0",
-          "port": 8686
-        }
+        
       }
     }
   },
