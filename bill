@@ -2,6 +2,23 @@
 
 export CONFIG_PREFIX="ag_"
 
+rootEnv=$CONFIG_PREFIX"env.sh"
+# echo $rootEnv
+
+if [ ! -e $rootEnv   ]
+then
+  echo "Please run ./configure first"
+  exit 1
+fi
+
+# include Env from file
+. $rootEnv
+
+
+
+# echo $CONFIG_PREFIX
+# exit
+
 # if ! runSomethingInBill &> /dev/null; then
 #   echo "Adding custom bin in path"
 #   # include custon bin in path
