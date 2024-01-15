@@ -1,7 +1,7 @@
 {
   "name": "utils",
   "exports": {
-    "./my_config": "./myConfig/myConfig.js"
+    "./my_config": "./my_config/my_config.js"
   },
   "type": "module"
 }
