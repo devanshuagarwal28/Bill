@@ -19,7 +19,8 @@ const PLATFORM = process.platform
 const SCRIPT_EXT = PLATFORM == "linux" ? "sh" : "bat"
 const myRegex = RegExp(/\$.*?\$/g)
 let gv = {
-  "PROJ_DIR": process.cwd()
+  "PROJ_DIR": process.cwd(),
+  // "CONFIG_PREFIX": configFilePrefix
 }
 
 
@@ -51,8 +52,9 @@ function parseValue(value)
 
 // not universal; just for this project
 class Config {
+  name = "Config"
   myConfigs = {}
-  constructor() { }
+  constructor(name = "Config") { this.name = name }
   addConfig(id, fileBaseDir, fileName, cb, arg)
   {
     this.myConfigs[id] = {
@@ -101,7 +103,7 @@ class Config {
     {
       case "clear":
       case "clean":
-        console.log("cleaning")
+        console.log(`cleaning ${this.name}`)
         this.clearConfig()
         break
       case "make":
@@ -117,11 +119,31 @@ class Config {
   }
 }
 
+class Data extends Config
+{
+  constructor(dataConfig)
+  {
+    super("Data")
+    this.config = dataConfig
+    // this.addConfig(
+    //   "db",
+    //   gv["DB_DIR"]
+    // )
+  }
+
+  mkConfig(action = "make")
+  {
+    this.handleAction(action, {
+      "make": _ => { this.makeConfig("root") }
+    })
+  }
+}
+
 class Server extends Config
 {
   constructor(serverConf)
   {
-    super()
+    super("Server")
     this.conig = serverConf
     this.addConfig(
       "server",
@@ -148,7 +170,10 @@ class Server extends Config
         return [
           [
             "nodeServerConf",
-            mType
+            {
+              "server": mType,
+              "host": config["host"]
+            }
           ]
         ]
       default:
@@ -158,7 +183,10 @@ class Server extends Config
 
   makeNodeServerConfig(config, save)
   {
-    save(JSON.stringify(config))
+    save(JSON.stringify({
+      "server": config["server"],
+      "host": config["host"]
+    }))
   }
 
   mkConfig(action = "make")
@@ -174,7 +202,7 @@ class Client extends Config
 {
   constructor(clinetConfig)
   {
-    super()
+    super("Client")
     this.config = clinetConfig
     this.addConfig(
       "client",
@@ -213,7 +241,10 @@ class Client extends Config
             return [
               [
                 "webFileServer",
-                mType['servers'][mType['server']]
+                {
+                  "client": mType['servers'][mType['server']],
+                  "host": mType["host"]
+                }
               ]
             ]
         }
@@ -225,8 +256,9 @@ class Client extends Config
   makeWebFileServerConfig(config, save)
   {
     save(JSON.stringify({
-      "staticFiles": config['staticFiles'],
-      "urlMapping": config['urlMapping']
+      "staticFiles": config["client"]['staticFiles'],
+      "urlMapping": config["client"]['urlMapping'],
+      "host": config["host"]
     }))
   }
 
@@ -238,6 +270,43 @@ class Client extends Config
     
   }
   
+}
+
+class Root extends Config
+{
+  constructor(rootConfig)
+  {
+    super("Root")
+    this.conig = rootConfig
+    this.addConfig(
+      "root",
+      gv["PROJ_DIR"], `env.${SCRIPT_EXT}`,
+      this.makeRootEnvConfig, rootConfig
+    )
+  }
+  makeRootEnvConfig(config, save)
+  {
+    let finalConfig = ``
+    for ( let g in gv )
+    {
+      if ( PLATFORM == 'win32' )
+      {
+
+      }
+      else
+      {
+        finalConfig += `export ${configFilePrefix}${g}=${gv[g]}\n`
+      }
+    }
+    save(finalConfig)
+  }
+
+  mkConfig(action = "make")
+  {
+    this.handleAction(action, {
+      "make": _ => { this.makeConfig("root") }
+    })
+  }
 }
 
 function parseVars(vals)
@@ -271,10 +340,18 @@ if ( process.argv[1] == __filename )
   configs = parseVars(configs)
   // console.log(configs)
 
+  // parse root
+  let root = new Root(configs["root"])
+  root.mkConfig(process.argv[2])
   // parse client
   let client = new Client(configs["client"])
   client.mkConfig(process.argv[2])
+  // parse server
   let server = new Server(configs["server"])
   server.mkConfig(process.argv[2])
+   // parse data
+   let data = new Data(configs["server"])
+   data.mkConfig(process.argv[2])
+
   console.log("Done")
 }
