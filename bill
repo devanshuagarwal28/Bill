@@ -12,8 +12,13 @@ h=($@)
 
 PATH=$PATH:~+/.bin/
 
+# Start Server
+runSomethingInBill ~+/server server.sh ${h[@]}
+
 # Start Client
 runSomethingInBill ~+/client client.sh ${h[@]}
+
+
 
 if [ 0 -ne $? ]; then
   exit 1

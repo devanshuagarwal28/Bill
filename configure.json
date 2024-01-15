@@ -1,4 +1,17 @@
 {
+  "server": {
+    "$SERVER_DIR": "$PROJ_DIR$/server",
+    "type": "node",
+    "st": "REST",
+    "types": {
+      "node": {
+        "host": {
+          "address": "0.0.0.0",
+          "port": 8686
+        }
+      }
+    }
+  },
   "client": {
     
     "$CLIENT_DIR": "$PROJ_DIR$/client",

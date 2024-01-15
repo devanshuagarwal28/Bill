@@ -117,6 +117,59 @@ class Config {
   }
 }
 
+class Server extends Config
+{
+  constructor(serverConf)
+  {
+    super()
+    this.conig = serverConf
+    this.addConfig(
+      "server",
+      gv["SERVER_DIR"], "config.txt",
+      this.makeServerConfig, serverConf
+    )
+    this.addConfig(
+      "nodeServerConf",
+      `${gv["SERVER_DIR"]}/node`, "config.json",
+      this.makeNodeServerConfig
+    )
+  }
+
+  makeServerConfig(config, save)
+  {
+    let {type} = config
+    let mType = config['types'][type]
+    let finalConfig = ``
+    switch(type)
+    {
+      case "node":
+        finalConfig += `node/ server.sh ${config["st"]}`
+        save(finalConfig)
+        return [
+          [
+            "nodeServerConf",
+            mType
+          ]
+        ]
+      default:
+          
+    }
+  }
+
+  makeNodeServerConfig(config, save)
+  {
+    save(JSON.stringify(config))
+  }
+
+  mkConfig(action = "make")
+  {
+    this.handleAction(action, {
+      "make": _ => { this.makeConfig("server") }
+    })
+    
+  }
+}
+
 class Client extends Config
 {
   constructor(clinetConfig)
@@ -221,5 +274,7 @@ if ( process.argv[1] == __filename )
   // parse client
   let client = new Client(configs["client"])
   client.mkConfig(process.argv[2])
-  // console.log()
+  let server = new Server(configs["server"])
+  server.mkConfig(process.argv[2])
+  console.log("Done")
 }
