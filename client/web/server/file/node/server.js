@@ -1,7 +1,12 @@
 import http from 'http'
+import { readConfig } from 'utils/my_config'
+
+let myConfig = readConfig(process.argv[2])
 
 let server = http.createServer((req, res) => {
-  res.end("HELLO FROM SERVER")
+  res.end(`HELLO FROM SERVER ${JSON.stringify(myConfig)}`)
 })
 
-server.listen(8585)
+server.listen(myConfig["host"]["port"], myConfig["host"]["address"], _ => {
+  
+})
