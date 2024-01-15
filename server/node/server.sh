@@ -10,7 +10,7 @@ fi
 
 if [ "$1" = "REST" ]; then
   # cd node
-  node server.js ../$CONFIG_PREFIX"config.json" &
+  node server.js $CONFIG_PREFIX"config.json" &
   node_pid=$!
   echo $node_pid > $PID_FILE
 fi
