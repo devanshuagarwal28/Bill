@@ -14,6 +14,18 @@ fi
 # include Env from file
 . $rootEnv
 
+logDir=$ag_LOG_DIR
+
+# echo $logDir
+
+# clear logs
+if [[ $logDir == *"logs"* ]]; then
+  if [ -e $logDir ]; then
+    echo "deleting logs from $logDir"
+    rm -rf $logDir/*
+  fi
+fi
+# exit
 
 
 # echo $CONFIG_PREFIX
