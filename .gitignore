@@ -3,3 +3,5 @@ ag_*
 *.pid
 **/db/*/*
 !**/db/*/readme.md
+*.log
+.exp/
