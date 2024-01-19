@@ -4,6 +4,7 @@
   },
   "data": {
     "$DATA_DIR": "$PROJ_DIR$/data",
+    "$LOG_DIR": "$DATA_DIR$/logs",
     "$DB": "xlsx",
     "$DB_DIR": "$DATA_DIR$/database/db/$DB$",
     "$DB_CON_DIR": "$DB_DIR$/connectors",
