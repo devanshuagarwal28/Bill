@@ -22,9 +22,9 @@ else
 
     if [ 0 -ne $? ]; then exit 1; fi
     
-    if [ "${c[3]}" = "browser" ]; then
-      xdg-open ${c[4]}
-    fi
+    # if [ "${c[3]}" = "browser" ]; then
+      # xdg-open ${c[4]}
+    # fi
   fi
 
 
