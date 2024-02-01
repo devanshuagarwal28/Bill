@@ -1,4 +1,4 @@
-import { readConfig, saveConfig, removeConfig } from "utils/my_config"
+import { readConfig, saveConfig, removeConfig, readFile } from "utils/my_config"
 
 /*
  From:
@@ -85,7 +85,7 @@ class Config {
         {
           throw("ERROR in Saving Config")
         }
-      }
+      }, file
     )
     if ( nextConfigs )
     {
@@ -119,22 +119,82 @@ class Config {
   }
 }
 
+class Dyn extends Config
+{
+  constructor(dynConfig)
+  {
+    super("Dyn")
+    this.config = dynConfig
+    
+    this.addConfig(
+      "dyn_js",
+      gv["DYN_DIR"], gv["NODE_DYN_FILE"],
+      this.dynJsConfig, dynConfig
+    )
+  }
+
+  dynJsConfig(config, save, fileName)
+  {
+    save(parseValue(readFile(config["node"]).toString()))
+  }
+
+  mkConfig(action = "make")
+  {
+    this.handleAction(action, {
+      "make": _ => { this.makeConfig("dyn_js") }
+    })
+  }
+}
+
+class Src extends Config
+{
+  constructor(srcConfig)
+  {
+    super("Src")
+    this.config = srcConfig
+
+    this.addConfig(
+      "list_api",
+      gv["SRC_DIR"], "api.json",
+      this.makeListApiConfig, srcConfig
+    )
+  }
+  makeListApiConfig(config, save, fileName)
+  {
+    gv["API_FILE_PATH"] = fileName
+    save(JSON.stringify(config["api"]))
+  }
+  mkConfig(action = "make")
+  {
+    this.handleAction(action, {
+      "make": _ => { this.makeConfig("list_api") }
+    })
+  }
+}
+
 class Data extends Config
 {
   constructor(dataConfig)
   {
     super("Data")
     this.config = dataConfig
-    // this.addConfig(
-    //   "db",
-    //   gv["DB_DIR"]
-    // )
+    
+    this.addConfig(
+      "db_list",
+      gv["DB_DIR"], "db_list.json",
+      this.makeDbListConfig, dataConfig
+    )
+  }
+
+  makeDbListConfig(config, save)
+  {
+    save(JSON.stringify(config["database"]["db"]))
   }
 
   mkConfig(action = "make")
   {
     this.handleAction(action, {
-      "make": _ => { this.makeConfig("root") }
+      "make": _ => { this.makeConfig("db_list") }
     })
   }
 }
@@ -309,6 +369,18 @@ class Root extends Config
   }
 }
 
+function setGv()
+{
+  if ( PLATFORM == 'win32' )
+  {
+    gv["PYBIN"] = "python.exe"
+  }
+  else
+  {
+    gv["PYBIN"] = "/bin/python"
+  }
+}
+
 function parseVars(vals)
 {
   if ( typeof(vals) == "string" )
@@ -333,6 +405,7 @@ function parseVars(vals)
 if ( process.argv[1] == __filename )
 {
 
+  setGv()
   // Open global config file
   const G_CONF_FILE = "configure.json"
   // console.log(process.cwd())
@@ -340,18 +413,32 @@ if ( process.argv[1] == __filename )
   configs = parseVars(configs)
   // console.log(configs)
 
-  // parse root
-  let root = new Root(configs["root"])
-  root.mkConfig(process.argv[2])
+
   // parse client
   let client = new Client(configs["client"])
   client.mkConfig(process.argv[2])
+  
   // parse server
   let server = new Server(configs["server"])
   server.mkConfig(process.argv[2])
-   // parse data
-   let data = new Data(configs["server"])
-   data.mkConfig(process.argv[2])
+  
+  // parse data
+  let data = new Data(configs["data"])
+  data.mkConfig(process.argv[2])
+
+  // parse Src
+  let src = new Src(configs["src"])
+  src.mkConfig(process.argv[2])
+
+  // parse Dyn
+  let dyn = new Dyn(configs["dyn"])
+  dyn.mkConfig(process.argv[2])
+
+
+
+  // parse root
+  let root = new Root(configs["root"])
+  root.mkConfig(process.argv[2])
 
   console.log("Done")
 }

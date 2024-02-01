@@ -1,5 +1,7 @@
 import http, { IncomingMessage, ServerResponse } from 'http'
 import {Log} from 'utils/log'
+import { getEnv } from "utils/my_config"
+import multer from 'multer'
 
 let log = null
 
@@ -19,9 +21,14 @@ export default class App
 {
   routes = {}
 
-  constructor(beforeConnSocket = async () => {})
+  constructor(options = {})
   {
-    this.beforeConnSocket = beforeConnSocket
+    this.beforeConnSocket = options.beforeConnSocket || (async () => {})
+    if ( !options['tempDir'] )
+    {
+      options['tempDir'] = getEnv("TEMP_DIR")
+    }
+    this.options = options
     this.routes = {
       '*': [
         new Route('*',
@@ -30,6 +37,29 @@ export default class App
       ],
     }
     this.server = http.createServer(this.onConnection.bind(this))
+  }
+
+  /**
+   * 
+   * @param {IncomingMessage} req 
+   * @param {ServerResponse} res 
+   */
+  parseReqData(req, res)
+  {
+    return new Promise((resolve, reject) => {
+      if ( req.headers['content-type'].indexOf('multipart') != -1 )
+      {
+        // do something and return
+      }
+      let data = Buffer.alloc(0)
+      req.on('data', chunk => {
+        // console.log('Chunk', chunk)
+        data = Buffer.concat([data, chunk])
+      })
+      req.on('end', _ => {
+        resolve(data)
+      })
+    })
   }
 
   /**
@@ -69,7 +99,7 @@ export default class App
      * If current method is not in route
      * then call the default callback
      */
-    if ( !req.method )
+    if ( !this.routes[req.method] )
     {
       return await this.routes['*'][0].cb(req, res)
     }
@@ -184,8 +214,14 @@ export default class App
      */
     if ( isSelected )
     {
+      let myData = {path: pathData, paths, url, data: null}
       // console.log('Selected Route', route)
-      return await route.cb({path: pathData, paths, url}, req, res)
+      if ( route.options['parseAllData'] == true )
+      {
+        let reqData = await this.parseReqData(req, res)
+        myData['data'] = reqData
+      }
+      return await route.cb(myData, req, res)
     }
 
     /**
@@ -234,6 +270,12 @@ export default class App
      * @type {URL}
      */
     let url = new URL(iUrl)
+    /** convert searchParams to object */
+    url.sp = {}
+    for ( let [key, val] of url.searchParams.entries() )
+    {
+      url.sp[key] = val
+    }
 
     // call preConnction function
     // by calling cb provided while construction App
@@ -308,6 +350,11 @@ export default class App
   get(path, cb, options = null)
   {
     this.route('GET', path, cb, options)
+  }
+
+  post(path, cb, options = null)
+  {
+    this.route('POST', path, cb, options)
   }
 
   start(port = 8080, host = '0.0.0.0', cb)

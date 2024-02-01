@@ -1,17 +1,50 @@
 {
   "root": {
-    "$SRC_DIR": "$PROJ_DIR/src"
+    "$CUST_PKG_DIR": "$PROJ_DIR$/.customPkgs",
+    "$UTILS_DIR": "$CUST_PKG_DIR$/utils"
+  },
+  "dyn": {
+    "$DYN_DIR": "$UTILS_DIR$/dyn",
+    "$NODE_DYN_FILE": "dyn.js",
+    "node": "$DYN_DIR$/dyn.jst"
+  },
+  "src": {
+    "$SRC_DIR": "$PROJ_DIR$/src",
+    "$PY_SRC_DIR": "$SRC_DIR$/py",
+    "api": {
+      "xlsxToJson": {
+        "bin": "$PYBIN$",
+        "filePath": "$PY_SRC_DIR$/xlsxToJson.py",
+        "argv": {
+          "filePath": "",
+          "jsonFilePath": ""
+        }
+      }
+    }
   },
   "data": {
     "$DATA_DIR": "$PROJ_DIR$/data",
     "$LOG_DIR": "$DATA_DIR$/logs",
-    "$DB": "xlsx",
-    "$DB_DIR": "$DATA_DIR$/database/db/$DB$",
-    "$DB_CON_DIR": "$DB_DIR$/connectors",
-    "$DB_NAME": "db",
-    "connectors": {
-      "py": {
-        "$PYDB_CON_DIR": "$DB_CON_DIR$/py"
+    "$SESSION_DIR": "$DATA_DIR$/sessions",
+    "$DB_DIR": "$DATA_DIR$/db",
+    "$TEMP_DIR": "$DATA_DIR$/temp",
+    "db": {
+      "sqlite3": {
+        "$SQLITE3_NODE_PATH": "$DB_DIR$/sqlite3"
+      }
+    },
+    "database": {
+      "db": {
+        "session": {
+          "eng": "sqlite3",
+          "dbFile": "$DB_DIR$/sqlite3/session.db"
+        }
+      }
+    },
+    "repo": {
+      "$REPO_DIR": "$DATA_DIR$/repo",
+      "session": {
+        "$SESSION_REPO_DIR": "$REPO_DIR$/session"
       }
     }
   },

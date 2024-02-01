@@ -12,13 +12,8 @@ let log = new Log('Server')
 
 let myConfig = readConfig(process.argv[2])
 
-let server = http.createServer((req, res) => {
-  res.end(`HELLO FROM SERVER: ${JSON.stringify(process.env)} ${JSON.stringify(myConfig)}`)
-})
-
-
 let sa = new ServerApp()
 
 sa.start(myConfig["host"]["port"], myConfig["host"]["address"], _ => {
-  log.d("Server Stated..")
+  log.i("Server Stated..", myConfig["host"])
 })

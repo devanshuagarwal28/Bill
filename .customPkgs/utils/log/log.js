@@ -31,7 +31,7 @@ class LogLine
   {
     let {datetime, name, type, logString} = logLine
     return (
-      `${datetime} ${name}\t${type}\t${logString}\n`
+      `${datetime} ${name}\t${type}\t|\t${logString}\n`
     )
   }
 }
@@ -49,10 +49,11 @@ class Writer  {
     this.logWriter = logWriter
   }
 
-  d() 
+  parseArgs(args)
   {
     let str = ``
-    for ( let arg of arguments )
+
+    for ( let arg of args )
     {
       if ( typeof(arg) == 'string' )
       {
@@ -63,13 +64,29 @@ class Writer  {
         str += JSON.stringify(arg) + ' '
       } catch(err) { str += ' ' }
     }
+    return str
+  }
+
+  d() 
+  {
+    let str = this.parseArgs(arguments)
     this.logWriter(new LogLine(this.name, 'debug', str))
   }
 
-  error(lineString)
+  info()
   {
-    this.logWriter(new LogLine(this.name, 'error', lineString))  
+    let str = this.parseArgs(arguments)
+    this.logWriter(new LogLine(this.name, 'info', str))
   }
+
+  i = this.info
+
+  error()
+  {
+    let str = this.parseArgs(arguments)
+    this.logWriter(new LogLine(this.name, 'error', str))  
+  }
+  e = this.error
 }
 
 /** Log Manager Class */

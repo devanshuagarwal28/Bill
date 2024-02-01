@@ -8,53 +8,103 @@ Proj Bill
 `POST`
 	
 #### Query
-* uuid
+* name : session name (optional)
+
+#### Data
+* file (multipart or default)
   
 #### Steps
-* create a tempDir with uuid
-* save in local storage
+* generate a `uuid`
+* `uniqueName` = `${fileName}_${uuid}`
+* create `sessionDir` with name `${uniqueName}`
+* save file in `sessionDir`
+* copy `${fileName}` to `filled_${name}_${fileName}`
+* convert file data to json and save to `${fileName}.json`
+* create a `bill_${fileName}.json` a/c to `${fileName}.json`
+* save session metadata in sqlite3
+	* uuid : `${uuid}`
+	* name : name if provided in query
+	* uniqueName : `${uniqueName}`
+	* fileName : `${fileName}`
+	* datetime : creation datetime
+	* billFileName : `bill_${fileName}.json`
+* respond `uuid`
 
 #### Response
 statusCode = 200 | 500 \
-data = (empty)
+data = jsonData = {uuid} for newly created session
 
 ---
-> addAndParseFile
+> getSessions
+`GET`
+
+list all session
+
+#### Query
+
+#### Steps
+* select * from sessiosn db
+
+#### Response
+statusCode = 200 | 500 \
+data = jsonData (array) containd all session info
+
+---
+> getSession
+`GET`
+
+get a specefic session
+
+#### Query
+* uuid : uuid of session
+* fileData : [true|false]
+
+#### Steps
+* select info from session table with uuid
+* if fileData is requested read `${uniqueName}/filled_${name}_${fileName}`
+
+#### Response
+statusCode = 200 | 404 \
+data = {metadata, fileData: (fileData if queried else {})} json
+
+---
+> getSessionFile
 `POST`
-	
+
+get the file in different format
+
 #### Query
 * uuid
-* data : file (multipart or default)
+* type : [filled=default|original]
+* format : [json=default for work|csv|xlsx=default for original|xls]
 	
 #### Steps
-* save file in tempDir of uuid
-* convert file data to json and save to ${fileName}.json
+* check for session in sql and file requested in directory
+* convert if required
 
 ### Resp
-statusCode = 200 | 500 \
-data = jsonData
+statusCode = 200 | 404 | 500 \
+data = requested file if exist and readed/parsed without error
 
 ---
 > codeInfo
 `GET`
 
 #### Query
-* uuid
 * code
 	
 #### Steps
-* search the file with code
+* search the file/db with code
 
 #### Resp
 statusCode = 200 | 404 | 500 \
-data = codeInfo if found in file
+data = codeInfo in JSON if found in file
 
 ---
 > addCode
 `PUT`
 
 #### Query
-* uuid
 * code
 * codeInfo
 	
@@ -68,60 +118,75 @@ data = (empty)
 ---
 > updateFile `PUT`
 
-update file that is in the session with the data from the UI
+update session file with the data from the UI
 
 #### Query
 * uuid
-* fileData in csv or json
+* format = [json=default|csv]
+
+#### Data
+* fileData
 	
 #### Steps
-* update/overwrite the data in the file
+* read from sql with uudi
+* update/overwrite the data in the filled file
+* create/update `${fileName}.json`
 
 #### Response
 code = 200 | 500
 
 ---
-> getFile `GET`
+> getBill `GET`
+
+get the Current Bill file
 
 #### Query
 * uuid
+* format=[json=default|pdf]
 
-#### Resp
-code = 200 | 404
-data = file if found
+#### Steps
+* get info from sql with uuid
+* create/update `bill_${fileName}.json` (preserving the extra billInfo) file a/c to `${fileName}.json` 
+* respond `bill_${fileName}.json` if format=json
+* create `bill` dir in sessionDir
+* create `bill_${fileName}.html`
+* create `bill_${fileName}.pdf` (https://pypi.org/project/pdfgen/)
+* respond `bill_${fileName}.pdf`
 
+#### Response
+code = 200 | 404 | 500\
+data = jsonData
 
 ---
-> getPdf `GET` 
-	
+> updateBill `PUT`
+
+update some bill info from the UI
+
 #### Query
 * uuid
-* data : full html page to be converted
-	
+
+#### Data
+* Full jsonData for updated Bill Info
+
 #### Steps
-* save the incomming html to file in tempDir
-* convert html file to pdf via pdfgen in python
-		(https://pypi.org/project/pdfgen/)
+* get data from sql by uuid
+* replace `bill_{fileName}.json` in sessionDir
 
-#### Resp
+#### Response
 code = 200 | 404 | 500
-data = pdfFile if no error
-
 
 *****************
 
 Steps to follow by user
-1) create session
-2) upload File
+1) create session and upload file/select session
 3) update File
-3) add code Info
-4) download lates filled file
-5) download pdf
+3) add code Info if required
+4) download bill
+5) edit Bill
+6) download pdf
 
 Features
-* List of prev sessions (optional)
+* List of prev sessions
 * Auto delete previus sessions
-* Single Page
 * Auto Start with Windows (just the service/server)
-* Automated Testing scripts
-<!-- * modular UI structure  -->
+* Automated Testing scripts (maybe not)

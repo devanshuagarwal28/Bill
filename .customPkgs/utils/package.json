@@ -2,7 +2,9 @@
   "name": "utils",
   "exports": {
     "./my_config": "./my_config/my_config.js",
-    "./log": "./log/log.js"
+    "./log": "./log/log.js",
+    "./dyn": "./dyn/ag_dyn.js",
+    "./app": "./app/app.js"
   },
   "type": "module"
 }

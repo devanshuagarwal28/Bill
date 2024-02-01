@@ -1,0 +1,19 @@
+#!/bin/bash
+cd ./data/sessions
+if [[ $? = 0 ]]; then
+  if [[ "${PWD##*/}" = "sessions" ]]; then
+    # echo "delete now ${PWD##*/}"
+    ls --hide=readme.md | xargs rm -r > /dev/null 2>&1
+    if [[ $? != 0 ]]; then
+      echo "No session exist"
+      exit 1
+    fi
+  fi
+fi
+cd ../temp
+if [[ $? = 0 ]]; then
+  if [[ "${PWD##*/}" = "temp" ]]; then
+    # echo "please del now"
+    find . -type f ! -iname "*.*" -delete
+  fi
+fi

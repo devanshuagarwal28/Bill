@@ -1,7 +1,15 @@
 node_modules
 ag_*
 *.pid
-**/db/*/*
+**/db/*/*/*
+!**/db/*/*/*/readme.md
+!**/db/*/*/*.js
+!**/db/*/*/*.py
 !**/db/*/readme.md
 *.log
 .exp/
+/data/temp/*
+!/data/temp/readme.md
+/data/sessions/*
+!/data/sessions/readme.md
+.bak/
