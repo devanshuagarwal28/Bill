@@ -355,7 +355,7 @@ class Root extends Config
       }
       else
       {
-        finalConfig += `export ${configFilePrefix}${g}=${gv[g]}\n`
+        finalConfig += `${configFilePrefix}${g}=${gv[g]}\n`
       }
     }
     save(finalConfig)
