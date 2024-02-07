@@ -9,7 +9,6 @@ let app = new App()
 let log = null
 
 
-
 export default class ServerApp
 {
   constructor(config) {
