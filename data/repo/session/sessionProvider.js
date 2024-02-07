@@ -49,9 +49,12 @@ class SessionIOProvider
     this.fileName = fileName
     this.uniqueName = `${this.name}_${fileName}_${uuid}`.replace(/[. ]/g,'_')
     this.datetime = new Date()
-    this.jsonFileName = `${fileName}.json`
+    this.jsonFileName = `json_${this.name}_${fileName}.json`
     this.billFileName = `bill_${fileName}.json`
     this.sessionDir = `${this.sessionsDirPath}/${this.uniqueName}`
+    this.originalFilePath = `${this.sessionDir}/original_${this.fileName}`
+    this.workFilePath = `${this.sessionDir}/${this.name}_${this.fileName}`
+    this.jsonFilePath = `${this.sessionDir}/${this.jsonFileName}`
   }
 
   initViaData(data)
