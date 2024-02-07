@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import fs from 'node:fs'
+import fs, { read, write } from 'node:fs'
 
 let CONFIG_PREFIX = 'ag_'
 
@@ -170,17 +170,104 @@ function clearDir(dirPath, type)
 }
 
 
-class SpawnManager
+// Fuck corporate
+class SpawnManagerManager
 {
-  constructor(id)
+  spawnConfig = {}
+  constructor(tempDir, id)
   {
     this.id = id
+    this.tempFileName = `${tempDir}/spawnManagerManager_${this.id}.json`
+    if ( false === fileExists(this.tempFileName) )
+    {
+      writeFile(this.tempFileName, '{}')
+      this.spawnConfig = {}
+    }
+    else
+    {
+      this.readConfigFile() 
+    }
+  }
+
+  readConfigFile()
+  {
+    this.spawnConfig = JSON.parse(
+      readFile(this.tempFileName).toString()
+    )
+  }
+
+  updateConfig()
+  {
+    // console.log("new Conf", this.spawnConfig)
+    writeFile(this.tempFileName, JSON.stringify(this.spawnConfig))
+  }
+  
+  addSpawnManager(id)
+  {
+    this.readConfigFile()
+    if ( !this.spawnConfig[id] )
+    {
+      this.spawnConfig[id] = {}
+      this.updateConfig()
+    }
+  }
+
+  addSpawn(id, name, pid)
+  {
+    this.readConfigFile()
+    this.spawnConfig[id][name] = pid
+    this.updateConfig()
+  }
+
+  getSpanws(id)
+  {
+    return this.spawnConfig[id]
+  }
+
+  removeSpawn(id, name)
+  {
+    this.readConfigFile()
+    delete(this.spawnConfig[id][name])
+    this.updateConfig()
+  }
+}
+
+
+class SpawnManager
+{
+  constructor(id, tempDir)
+  {
+    this.id = id
+    this.smm = new SpawnManagerManager(tempDir, id)
+    this.smm.addSpawnManager(this.id)
+    this.handlePrevSpawns()
     this.mySpawns = {}
+  }
+
+  handlePrevSpawns()
+  {
+    let spawns = this.smm.getSpanws(this.id)
+    for ( let name in spawns )
+    {
+      try
+      {
+        // console.log("killing PID", this.id, name)
+        this.smm.removeSpawn(this.id, name)
+        process.kill(spawns[name])
+      }
+      catch(err)
+      {
+        // console.log(err)
+      }
+    }
+
   }
 
   exit(name)
   {
     this.mySpawns[name].sp.kill()
+    // console.log("KILLED", this.id, name)
+    this.smm.removeSpawn(this.id, name)
   }
 
   exitAll()
@@ -198,6 +285,7 @@ class SpawnManager
         sp: spawn(argv0, args, options),
         cb: {}
       }
+      this.smm.addSpawn(this.id, name, this.mySpawns[name].sp.pid)
       this.makeHandler(name)
     }
     catch(err)
@@ -222,4 +310,4 @@ class SpawnManager
   }
 }
 
-export { SpawnManager, clearDir, createDir, updateCP, wp, rmFile, fileExists, writeFile, readConfig, saveConfig, removeConfig, readConfigWithName, getEnv, readFile };
+export { SpawnManagerManager, SpawnManager, clearDir, createDir, updateCP, wp, rmFile, fileExists, writeFile, readConfig, saveConfig, removeConfig, readConfigWithName, getEnv, readFile };
