@@ -17,8 +17,8 @@ Proj Bill
 * generate a `uuid`
 * `uniqueName` = `${fileName}_${uuid}`
 * create `sessionDir` with name `${uniqueName}`
-* save file in `sessionDir`
-* copy `${fileName}` to `filled_${name}_${fileName}`
+* save file in `sessionDir` with name `original_${fileName}`
+* copy `${fileName}` to `${name}_${fileName}`
 * convert file data to json and save to `${fileName}.json`
 * create a `bill_${fileName}.json` a/c to `${fileName}.json`
 * save session metadata in sqlite3
