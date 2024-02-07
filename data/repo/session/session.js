@@ -41,11 +41,19 @@ export default class Session
     /** Create Session Directory */
     await this.io.createSessionDir()
 
-    return {code: 200, data: "NICE"}
-
-
     /** Save file in Session Directory */
-    await this.io.saveOriginalFile(data.get("filePath"))
+    await this.io.saveOriginalFile(data['file']['path'])
+
+    /** Convert file to JSON */
+    let cjf = await createJsonFile(this.io.workFilePath, this.io.jsonFilePath)
+    if ( cjf.data )
+    {
+      cjf.data = cjf.data.toString()
+    }
+    console.log(cjf)
+    return {code: 200, data: `${JSON.stringify(cjf)}`}
+
+
 
     
     
