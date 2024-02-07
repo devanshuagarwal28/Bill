@@ -11,9 +11,9 @@ function GetFromAPI(apiName, args = {}, inputStream = null)
     {
       return reject(`No Such API: ${apiName}`)
     }
-    let {bin, filePath, argv} = API[apiName]
+    let {bin, filePath, argv, argv0, cwd} = API[apiName]
 
-    let argToSend = []
+    let argToSend = [argv0]
     for ( let a in argv )
     {
       if ( args[a] )
@@ -24,7 +24,7 @@ function GetFromAPI(apiName, args = {}, inputStream = null)
       argToSend.push(argv[a])
     }
 
-    let myRes = spawn(`${bin} ${filePath}`, argToSend)
+    let myRes = spawn(bin, argToSend, {cwd})
     if ( inputStream != null )
     {
       myRes.stdin.pipe(inputStream)
@@ -33,21 +33,25 @@ function GetFromAPI(apiName, args = {}, inputStream = null)
       stdout: Buffer.alloc(0),
       stderr: Buffer.alloc(0)
     }
-    myRes.stdout.setEncoding('hex')
+    // myRes.stdout.setEncoding('hex')
     myRes.stdout.on('data', (chunk) => {
       resData.stdout = Buffer.concat([resData.stdout, chunk])
     })
 
-    myRes.stderr.setEncoding('hex')
+    // myRes.stderr.setEncoding('hex')
     myRes.stderr.on('data', (chunk) => {
       resData.stderr = Buffer.concat([resData.stderr, chunk])
     })
 
     myRes.on('close', (code) => {
+      resData.exitCode = code
+      // do something about it
       if ( code != 0 )
       {
-        return reject(`EXIT CODE: ${code}`)
+        // return reject(`EXIT CODE: ${code}`)
+        return reject(resData)
       }
+      // console.log('from SPAWN', resData.stdout.toString())
       resolve(resData)
     })
   })
@@ -63,11 +67,27 @@ async function createJsonFile(filePath, jsonFilePath)
 {
   try
   {
-    return await GetFromAPI('xlsxToJson', {filePath, jsonFilePath})
+    let data = await GetFromAPI('xlsxToJson', {filePath, jsonFilePath})
+    if ( data.stderr.length > 0 )
+    {
+      return {
+        error: true,
+        desc: data.stderr.toString()
+      }
+    }
+    return {
+      error: false,
+      data: data.stdout
+    }
   }
   catch(err)
   {
-    throw err
+    return {
+      error: true,
+      code: err.exitCode,
+      desc: err.stderr.toString()
+    }
+    // throw err
   }
 }
 
