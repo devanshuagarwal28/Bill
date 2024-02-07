@@ -14,7 +14,9 @@
     "api": {
       "xlsxToJson": {
         "bin": "$PYBIN$",
+        "cwd": "$PY_SRC_DIR$",
         "filePath": "$PY_SRC_DIR$/xlsxToJson.py",
+        "argv0": "xlsxToJson.py",
         "argv": {
           "filePath": "",
           "jsonFilePath": ""
