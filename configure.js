@@ -207,7 +207,7 @@ class Server extends Config
     this.conig = serverConf
     this.addConfig(
       "server",
-      gv["SERVER_DIR"], "config.txt",
+      gv["SERVER_DIR"], "config.json",
       this.makeServerConfig, serverConf
     )
     this.addConfig(
@@ -222,11 +222,17 @@ class Server extends Config
     let {type} = config
     let mType = config['types'][type]
     let finalConfig = ``
+    let finalJson = {}
     switch(type)
     {
       case "node":
+        finalJson['argv0'] = 'node'
+        finalJson['id'] = 'nodeServer'
+        finalJson['args'] = ['./server.js',`${configFilePrefix}config.json`]
+        finalJson['cwd'] = './node/'
         finalConfig += `node/ server.sh ${config["st"]}`
-        save(finalConfig)
+        // save(finalConfig)
+        save(JSON.stringify(finalJson))
         return [
           [
             "nodeServerConf",
@@ -266,7 +272,7 @@ class Client extends Config
     this.config = clinetConfig
     this.addConfig(
       "client",
-      gv["CLIENT_DIR"], "config.txt",
+      gv["CLIENT_DIR"], "config.json",
       this.makeClientConfig, clinetConfig
     )
 
@@ -283,9 +289,15 @@ class Client extends Config
     let {type} = config
     let mType = config['types'][type]
     let finalConfig = ``
+    let finalJson = {}
+
     switch(type)
     {
       case 'web':
+        finalJson['argv0'] = 'node'
+        finalJson['id'] = 'nodeServer'
+        finalJson['args'] = ['./server.js',`../${configFilePrefix}config.json`]
+        finalJson['cwd'] = `${type}/server/${mType['server']}/node`
         finalConfig += 
         `${type}/server/${mType['server']} server.${SCRIPT_EXT}`
         switch(mType['server'])
@@ -297,7 +309,8 @@ class Client extends Config
             finalConfig += ` ${provider}`
             finalConfig += `\nbrowser\n`
             finalConfig += `${mType["url"]}`
-            save(finalConfig)
+            save(JSON.stringify(finalJson))
+            // save(finalConfig)
             return [
               [
                 "webFileServer",
