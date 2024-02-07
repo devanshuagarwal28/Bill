@@ -11,7 +11,8 @@ import {
   wp, // with prefix
   createDir,
   clearDir,
-  SpawnManager
+  SpawnManager,
+  SpawnManagerManager
 } from "utils/my_config"
 
 import process, { kill } from 'node:process'
@@ -147,7 +148,7 @@ for ( let argGroup in bill_args )
   }
 }
 
-let mySpawns = new SpawnManager('Bill')
+let mySpawns = new SpawnManager('Bill', ENVS[wp('TEMP_DIR')])
 
 /**
  * Run Server
@@ -160,7 +161,21 @@ mySpawns.addProcess('server',
   }
 )
 
+/**
+ * Run Client
+ */
+mySpawns.addProcess('client',
+  'node',['./client.js', CONFIG_PREFIX],
+  {
+    cwd: './client/'
+  }
+)
+
 process.on('SIGTERM', _ => {
+  mySpawns.exitAll()
+})
+
+process.on('SIGINT', _ => {
   mySpawns.exitAll()
 })
 
