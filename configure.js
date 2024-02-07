@@ -390,7 +390,7 @@ function setGv()
   }
   else
   {
-    gv["PYBIN"] = "/bin/python"
+    gv["PYBIN"] = "python"
   }
 }
 
