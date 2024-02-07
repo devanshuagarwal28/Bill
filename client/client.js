@@ -13,7 +13,7 @@ updateCP(process.argv[2])
 // console.log('Spawing...')
 
 let myConfig = readConfig(wp('config.json'))
-let mySpawns = new SpawnManager('Server', process.env[wp('TEMP_DIR')])
+let mySpawns = new SpawnManager('Client', process.env[wp('TEMP_DIR')])
 
 console.log(myConfig)
 
